@@ -1,0 +1,5 @@
+- path: /some/testpath
+  actionsList: []
+  eventTypes:
+  - CREATED
+  parallel: true
