@@ -1,5 +1,7 @@
-- path: /some/testpath
+- path: /tmp
   actionsList: []
+  initialDelaySeconds: 5
+  pollingDelaySeconds: 3
   eventTypes:
   - CREATED
   parallel: true

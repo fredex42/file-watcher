@@ -1,5 +1,7 @@
+import akka.actor.Props
 import com.google.inject.AbstractModule
-import services.{WatcherConfigs, WatcherConfigsImpl}
+import play.api.libs.concurrent.AkkaGuiceSupport
+import services._
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -11,10 +13,15 @@ import services.{WatcherConfigs, WatcherConfigsImpl}
  * adding `play.modules.enabled` settings to the `application.conf`
  * configuration file.
  */
-class Module extends AbstractModule {
+class Module extends AbstractModule with AkkaGuiceSupport {
 
   override def configure() = {
+    bindActor[FilesystemEventActor]("filesystem-event-actor")
+    bindActor[PollingActor]("polling-actor")
+
     bind(classOf[WatcherConfigs]).to(classOf[WatcherConfigsImpl]).asEagerSingleton()
+    //this class evaluates the configuration and gets Akka's scheduler to start sending polling messages
+    bind(classOf[Startup]).asEagerSingleton()
   }
 
 }

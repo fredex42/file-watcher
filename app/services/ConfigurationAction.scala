@@ -7,7 +7,7 @@ import services.EventTypes.EventTypes
 import scala.concurrent.{ExecutionContext, Future}
 
 
-case class ConfigurationAction (path:String, eventTypes:Seq[EventTypes], actionsList:Seq[KubeJobAction], parallel:Boolean=true){
-  def execute(implicit ec: ExecutionContext):Seq[Future[GenericActionResult]] = actionsList.map(_.)
+case class ConfigurationAction (path:String, initialDelaySeconds: Int, pollingDelaySeconds: Int, eventTypes:Seq[EventTypes], actionsList:Seq[KubeJobAction], parallel:Boolean=true){
+  def execute(evt:FilesystemEventActor.FSEvent)(implicit ec: ExecutionContext):Seq[Future[GenericActionResult]] = actionsList.map(_.execute(evt))
 }
 

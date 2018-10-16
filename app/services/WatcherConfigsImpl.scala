@@ -46,4 +46,8 @@ class WatcherConfigsImpl @Inject() (configuration:Configuration, lifecycle:Appli
   override def actionsForPath(fsPath: String): Seq[ConfigurationAction] = {
     staticConfig.filter(_.path==fsPath) //this will probably need to be enhanced a bit...
   }
+
+  override def forEach(block: ConfigurationAction => Unit): Unit = {
+    staticConfig.foreach(block)
+  }
 }

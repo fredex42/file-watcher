@@ -20,7 +20,6 @@ object FilesystemEventActor {
   }
 
   case class FSEvent (uuid:UUID, path: String, eventType: EventTypes) extends Message
-
   case class EventHandled(eventId:UUID) extends Message
 
 }
@@ -60,18 +59,19 @@ class FilesystemEventActor @Inject() (watcherConfigs: WatcherConfigs) extends Pe
 
         val parallelEventsFutures = for {
           action <- watcherConfigs.actionsForPath(msgAsObject.path)
-          result <- action.execute
+          result <- action.execute(event)
         } yield result
+
         Future.sequence(parallelEventsFutures).onComplete({
           case Success(resultsSequence)=>
             logger.info(s"All events succeeded for $msgAsObject")
+            self ! EventHandled(msgAsObject.uuid)
           case Failure(error)=>
             parallelEventsFutures.map(_.collect({
               case err:Throwable=>
                 logger.warn(s"Event step failed for $msgAsObject", err)
             }))
         })
-
       }
   }
 }
